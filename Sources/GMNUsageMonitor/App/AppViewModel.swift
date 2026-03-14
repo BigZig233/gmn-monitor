@@ -174,7 +174,7 @@ final class AppViewModel: ObservableObject {
             isAuthenticated: authStore.isAuthenticated,
             selectedSubscription: subscription,
             selectedDailyUsagePercent: subscription.usage.daily?.percent,
-            alias: settingsStore.selectedSubscriptionAlias,
+            alias: settingsStore.alias(for: subscription.id),
             hasError: authStore.lastError != nil || subscriptionStore.lastError != nil
         )
         updatePhase()
@@ -187,7 +187,7 @@ final class AppViewModel: ObservableObject {
             isAuthenticated: authStore.isAuthenticated,
             selectedSubscription: subscriptionStore.selectedSubscription,
             selectedDailyUsagePercent: subscriptionStore.selectedDailyUsagePercent,
-            alias: alias,
+            alias: settingsStore.selectedSubscriptionAlias,
             hasError: authStore.lastError != nil || subscriptionStore.lastError != nil
         )
         onMenuStateChange?()

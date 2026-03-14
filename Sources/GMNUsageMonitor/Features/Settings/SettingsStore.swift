@@ -10,19 +10,30 @@ final class SettingsStore: ObservableObject {
 
     init(defaultsStore: DefaultsStore) {
         self.defaultsStore = defaultsStore
-        selectedSubscriptionID = defaultsStore.selectedSubscriptionID
-        selectedSubscriptionAlias = defaultsStore.selectedSubscriptionAlias
+        let selectedSubscriptionID = defaultsStore.selectedSubscriptionID
+        self.selectedSubscriptionID = selectedSubscriptionID
+        selectedSubscriptionAlias = defaultsStore.selectedSubscriptionAlias(for: selectedSubscriptionID)
         refreshIntervalPreset = defaultsStore.refreshIntervalPreset
     }
 
     func selectSubscription(id: Int?) {
         selectedSubscriptionID = id
         defaultsStore.selectedSubscriptionID = id
+        selectedSubscriptionAlias = alias(for: id)
+    }
+
+    func alias(for subscriptionID: Int?) -> String {
+        defaultsStore.selectedSubscriptionAlias(for: subscriptionID)
     }
 
     func updateAlias(_ alias: String) {
-        selectedSubscriptionAlias = alias
-        defaultsStore.selectedSubscriptionAlias = alias
+        guard let selectedSubscriptionID else {
+            selectedSubscriptionAlias = ""
+            return
+        }
+
+        defaultsStore.setSelectedSubscriptionAlias(alias, for: selectedSubscriptionID)
+        selectedSubscriptionAlias = defaultsStore.selectedSubscriptionAlias(for: selectedSubscriptionID)
     }
 
     func updateRefreshInterval(_ preset: RefreshIntervalPreset) {
@@ -31,8 +42,9 @@ final class SettingsStore: ObservableObject {
     }
 
     func clearSelection() {
-        selectSubscription(id: nil)
-        updateAlias("")
+        selectedSubscriptionID = nil
+        selectedSubscriptionAlias = ""
+        defaultsStore.selectedSubscriptionID = nil
     }
 
     func clearAll() {

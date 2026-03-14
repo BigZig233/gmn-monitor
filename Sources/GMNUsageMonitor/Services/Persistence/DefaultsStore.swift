@@ -7,6 +7,7 @@ final class DefaultsStore {
     private enum Key {
         static let selectedSubscriptionID = "selectedSubscriptionId"
         static let selectedSubscriptionAlias = "selectedSubscriptionAlias"
+        static let selectedSubscriptionAliases = "selectedSubscriptionAliases"
         static let refreshIntervalPreset = "refreshIntervalPreset"
         static let baseURL = "baseUrl"
         static let locale = "locale"
@@ -15,6 +16,7 @@ final class DefaultsStore {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        migrateLegacySelectedSubscriptionAliasIfNeeded()
     }
 
     var selectedSubscriptionID: Int? {
@@ -26,13 +28,38 @@ final class DefaultsStore {
         }
     }
 
-    var selectedSubscriptionAlias: String {
+    var selectedSubscriptionAliases: [String: String] {
         get {
-            defaults.string(forKey: Key.selectedSubscriptionAlias) ?? ""
+            defaults.dictionary(forKey: Key.selectedSubscriptionAliases) as? [String: String] ?? [:]
         }
         set {
-            defaults.set(newValue, forKey: Key.selectedSubscriptionAlias)
+            defaults.set(newValue, forKey: Key.selectedSubscriptionAliases)
         }
+    }
+
+    func selectedSubscriptionAlias(for subscriptionID: Int?) -> String {
+        guard let subscriptionID else {
+            return ""
+        }
+
+        return selectedSubscriptionAliases[String(subscriptionID)] ?? ""
+    }
+
+    func setSelectedSubscriptionAlias(_ alias: String, for subscriptionID: Int?) {
+        guard let subscriptionID else {
+            return
+        }
+
+        var aliases = selectedSubscriptionAliases
+        let key = String(subscriptionID)
+
+        if alias.isEmpty {
+            aliases.removeValue(forKey: key)
+        } else {
+            aliases[key] = alias
+        }
+
+        selectedSubscriptionAliases = aliases
     }
 
     var refreshIntervalPreset: RefreshIntervalPreset {
@@ -67,9 +94,31 @@ final class DefaultsStore {
     func clearAll() {
         defaults.removeObject(forKey: Key.selectedSubscriptionID)
         defaults.removeObject(forKey: Key.selectedSubscriptionAlias)
+        defaults.removeObject(forKey: Key.selectedSubscriptionAliases)
         defaults.removeObject(forKey: Key.refreshIntervalPreset)
         defaults.removeObject(forKey: Key.baseURL)
         defaults.removeObject(forKey: Key.locale)
         defaults.removeObject(forKey: Key.timezone)
+    }
+
+    private func migrateLegacySelectedSubscriptionAliasIfNeeded() {
+        guard defaults.object(forKey: Key.selectedSubscriptionAlias) != nil else {
+            return
+        }
+
+        defer {
+            defaults.removeObject(forKey: Key.selectedSubscriptionAlias)
+        }
+
+        guard let selectedSubscriptionID,
+              let legacyAlias = defaults.string(forKey: Key.selectedSubscriptionAlias),
+              !legacyAlias.isEmpty else {
+            return
+        }
+
+        var aliases = selectedSubscriptionAliases
+        let key = String(selectedSubscriptionID)
+        aliases[key] = aliases[key] ?? legacyAlias
+        selectedSubscriptionAliases = aliases
     }
 }

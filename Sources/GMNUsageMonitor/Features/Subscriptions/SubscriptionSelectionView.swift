@@ -55,5 +55,8 @@ struct SubscriptionSelectionView: View {
         .onAppear {
             aliasDraft = viewModel.settingsStore.selectedSubscriptionAlias
         }
+        .onChange(of: viewModel.settingsStore.selectedSubscriptionID) {
+            aliasDraft = viewModel.settingsStore.selectedSubscriptionAlias
+        }
     }
 }

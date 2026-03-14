@@ -38,7 +38,7 @@ final class RefreshCoordinator {
             isAuthenticated: authStore.isAuthenticated,
             selectedSubscription: subscriptionStore.selectedSubscription,
             selectedDailyUsagePercent: subscriptionStore.selectedDailyUsagePercent,
-            alias: settingsStore.selectedSubscriptionAlias,
+            alias: settingsStore.alias(for: settingsStore.selectedSubscriptionID),
             hasError: authStore.lastError != nil || subscriptionStore.lastError != nil
         )
     }
