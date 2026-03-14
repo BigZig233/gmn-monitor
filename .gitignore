@@ -1,0 +1,12 @@
+# Local config and runtime data
+config.json
+data/*.json
+!data/.gitkeep
+
+# Build and packaging artifacts
+.build/
+dist/
+*.dSYM/
+
+# macOS metadata
+.DS_Store

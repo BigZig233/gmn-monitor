@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GMN 用量监控</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">GMN Monitor</p>
+          <h1>实时订阅用量</h1>
+          <p id="status-line" class="status-line">正在连接本地代理…</p>
+        </div>
+        <div class="hero-actions">
+          <button id="refresh-button" class="primary-button" type="button">立即刷新</button>
+          <button id="logout-button" class="ghost-button" type="button">退出会话</button>
+          <button id="clear-credentials-button" class="ghost-button" type="button">清除自动重登</button>
+        </div>
+      </header>
+
+      <section class="panel message-panel">
+        <div id="message-bar" class="message-bar is-hidden"></div>
+        <div id="chip-row" class="chip-row"></div>
+      </section>
+
+      <section class="panel auth-panel">
+        <div class="panel-head">
+          <h2>登录与保活</h2>
+          <p>站点 401 时会先自动刷新 token，失败后再尝试自动重登。</p>
+        </div>
+        <form id="login-form" class="stacked-form">
+          <label>
+            <span>邮箱</span>
+            <input id="email-input" type="email" autocomplete="username" placeholder="you@example.com" />
+          </label>
+          <label>
+            <span>密码</span>
+            <input id="password-input" type="password" autocomplete="current-password" placeholder="输入账号密码" />
+          </label>
+          <label>
+            <span>TOTP Secret，可选</span>
+            <input
+              id="totp-secret-input"
+              type="text"
+              placeholder="Base32 secret 或 otpauth:// URI"
+            />
+          </label>
+          <label class="checkbox-row">
+            <input id="remember-input" type="checkbox" checked />
+            <span>保存凭据用于自动重登</span>
+          </label>
+          <p class="hint">
+            保存后会写入本机
+            <code>/Users/bigzi/service/gmn-usage-monitor/data/credentials.json</code>
+          </p>
+          <button id="login-button" class="primary-button" type="submit">登录</button>
+        </form>
+
+        <form id="totp-form" class="stacked-form is-hidden">
+          <div class="two-factor-note">
+            <strong>需要 2FA 验证</strong>
+            <p id="two-factor-hint">请填入当前 TOTP 验证码。</p>
+          </div>
+          <label>
+            <span>6 位验证码</span>
+            <input id="totp-code-input" type="text" inputmode="numeric" maxlength="6" placeholder="123456" />
+          </label>
+          <button id="totp-button" class="primary-button" type="submit">完成 2FA 登录</button>
+        </form>
+      </section>
+
+      <main class="main-grid">
+        <section class="panel cards-panel">
+          <div class="panel-head">
+            <h2>当前订阅</h2>
+            <p>展示站点 `/subscriptions` 页面正在使用的真实字段。</p>
+          </div>
+          <div id="cards" class="cards-grid"></div>
+          <div id="empty-state" class="empty-state is-hidden"></div>
+        </section>
+
+        <section class="panel structure-panel">
+          <div class="panel-head">
+            <h2>当前页面结构</h2>
+            <p>这里展示我刚才从线上实际 bundle 提取出来的结构摘要。</p>
+          </div>
+          <pre id="structure-output" class="structure-output">正在加载结构摘要…</pre>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "port": 3210,
+  "baseUrl": "https://gmn.chuangzuoli.com",
+  "locale": "zh",
+  "timezone": "Asia/Shanghai",
+  "uiRefreshMs": 15000,
+  "cacheTtlMs": 5000,
+  "requestTimeoutMs": 30000,
+  "authRefreshLeadMs": 60000,
+  "email": "",
+  "password": "",
+  "totpSecret": ""
+}
